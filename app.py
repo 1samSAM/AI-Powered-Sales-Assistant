@@ -11,11 +11,12 @@ import re
 from rapidfuzz import fuzz, process
 
 # Step 1: Environment and Dependencies Setup
+# Google Sheets API Constants
 SCOPES = [
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/drive",
 ]
-SERVICE_ACCOUNT_FILE = "alert-rush-445806-v2-9f9cb653e266.json"
+SERVICE_ACCOUNT_FILE = "alert.json"
 
 # Google Sheets Authentication
 credentials = Credentials.from_service_account_file(
