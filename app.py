@@ -11,7 +11,6 @@ import re
 from rapidfuzz import fuzz, process
 
 # Step 1: Environment and Dependencies Setup
-# Google Sheets API Constants
 SCOPES = [
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/drive",
