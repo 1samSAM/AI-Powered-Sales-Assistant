@@ -1,0 +1,9 @@
+Flask
+Flask-SocketIO
+google-auth
+gspread
+SpeechRecognition
+transformers
+rapidfuzz
+torch
+sqlite3  # SQLite comes bundled with Python, no need to install separately
