@@ -144,10 +144,20 @@ def calculate_best_price(sentiment, tone, start_price, price_limit):
     best_price = max(min(best_price, start_price), price_limit)
     return best_price
 
-def save_to_google_sheets(text, sentiment, tone, product, best_price, response):
+def generate_seller_guidance(product_name, sentiment, tone, best_price):
+    guidance = f"User is interested in '{product_name}'. "
+    if sentiment == "negative" and tone in ["sad", "angry"]:
+        guidance += f"Be empathetic and emphasize the discounted price of ${best_price:.2f}."
+    elif sentiment == "positive":
+        guidance += f"Highlight the features and competitive price of ${best_price:.2f}."
+    else:
+        guidance += f"Provide detailed information and reinforce the price: ${best_price:.2f}."
+    return guidance
+
+def save_to_google_sheets(text, sentiment, tone, product, best_price, response, guidance):
     try:
         # Ensure all values are converted to string for compatibility with Google Sheets
-        data = [str(text), str(sentiment), str(tone), str(product), str(best_price), str(response)]
+        data = [str(text), str(sentiment), str(tone), str(product), str(best_price), str(response), str(guidance),]
         sheet.append_row(data)
         print(f"Saved to Google Sheets: {data}")
     except Exception as e:
@@ -171,7 +181,7 @@ def transcribe_audio():
                 print(f"Transcribed: {text}")
 
                  # Default values for variables
-                sentiment, tone, best_price = "UNKNOWN", "UNKNOWN", 0.0
+                sentiment, tone, best_price, guidance = "UNKNOWN", "UNKNOWN", 0.0, ""
 
                 # Extract product name
                 product_name = extract_product_name(text)
@@ -188,6 +198,7 @@ def transcribe_audio():
                         price_limit = float(product[4])
                         sentiment = analyze_sentiment(text)
                         tone = analyze_tone(text)
+                        guidance = generate_seller_guidance(product_name, sentiment, tone, best_price)
 
                         if sentiment == "NEGATIVE" and tone == "sadness":
                             additional_discount = 0.1  # Extra 10% discount
@@ -218,12 +229,12 @@ def transcribe_audio():
                         "tone": tone,
                         "product_name": product[1] if product else "None",
                         "best_price": round(best_price, 2) if best_price else "N/A",
-                        "response": response,
+                        "guidance": guidance
                     }
                 )
                 print(response)
                 # Save to Google Sheets and append results
-                save_to_google_sheets(text, sentiment, tone, product, best_price, response)
+                save_to_google_sheets(text, sentiment, tone, product, best_price, response, guidance)
             except sr.UnknownValueError:
                 print("Could not understand the audio.")
             except sr.WaitTimeoutError:
@@ -235,19 +246,37 @@ def transcribe_audio():
 
 @app.route("/", methods=["GET", "POST"])
 def index():
-    global is_listening
+    global results, is_listening
+    status = None
+    greeting_message = "Welcome to the AI-Powered Sales Assistant!"
+
     if request.method == "POST":
         if "start" in request.form:
             if not is_listening:
                 is_listening = True
                 Thread(target=transcribe_audio).start()
-                return render_template("index.html", results=results, status="Listening started", greeting=greeting_message)
-            return render_template("index.html", results=results, status="Already listening", greeting=greeting_message)
+                status = "Listening started."
+            else:
+                status = "Already listening."
         elif "stop" in request.form:
             is_listening = False
-            return render_template("index.html", results=results, status="Listening stopped")
+            status = "Listening stopped."
+        elif "clear" in request.form:
+            results.clear()
+            status = "Results cleared."
 
-    return render_template("index.html", results=results, status=None)
+    # Get the latest result for display
+    latest_result = results[-1] if results else None
+    print("DEBUG: Passing to template:", latest_result)  # Debugging line
+
+    return render_template(
+        "index.html",
+        status=status,
+        greeting=greeting_message,
+        result=latest_result,
+    )
+
+
 
 # Run Flask app
 if __name__ == "__main__":

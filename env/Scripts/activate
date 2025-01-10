@@ -38,7 +38,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="E:\project\model_1\env"
+VIRTUAL_ENV="E:\project\Real-time-Ai-sales-intelligence\env"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
