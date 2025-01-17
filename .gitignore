@@ -1,5 +1,7 @@
 alert.json
 # Ignore environment variables
 .env
+
 env
+
 config.env
