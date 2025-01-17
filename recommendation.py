@@ -12,10 +12,10 @@ from langchain.embeddings.huggingface import HuggingFaceEmbeddings
 from langchain_huggingface import HuggingFaceEmbeddings
 
 # Load environment variables from a .env file
-load_dotenv()
+load_dotenv(dotenv_path="config.env")
 
 # API Key for Groq
-os.environ["GROQ_API_KEY"] = "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"
+os.environ["GROQ_API_KEY"] = os.getenv("GROQ_API_KEY")
 api_key = os.getenv("GROQ_API_KEY")
 if not api_key:
     raise EnvironmentError("API key for Groq is not set. Please provide a valid key.")
