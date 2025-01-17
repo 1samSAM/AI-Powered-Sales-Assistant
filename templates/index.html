@@ -15,11 +15,15 @@
         .btn {
             margin: 0.5rem;
         }
-        .table-responsive {
-            margin-top: 2rem;
-        }
         .alert {
             margin-top: 1rem;
+        }
+        .result-card {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border: 1px solid #ddd;
+            border-radius: 0.5rem;
+            background-color: #ffffff;
         }
         footer {
             margin-top: 3rem;
@@ -41,6 +45,7 @@
             <form method="POST" class="d-flex justify-content-center">
                 <button type="submit" name="start" class="btn btn-primary">Start Listening</button>
                 <button type="submit" name="stop" class="btn btn-danger">Stop Listening</button>
+                <button type="submit" name="clear" class="btn btn-warning">Clear Results</button>
             </form>
         </div>
 
@@ -50,38 +55,18 @@
 
         <div class="mt-5">
             <h2 class="text-center">Analysis Results</h2>
-            <div class="table-responsive">
-                {% if results %}
-                <table class="table table-bordered table-hover">
-                    <thead class="table-light">
-                        <tr>
-                            <th>#</th>
-                            <th>Input Text</th>
-                            <th>Sentiment</th>
-                            <th>Tone</th>
-                            <th>Product</th>
-                            <th>Best Price</th>
-                            <th>Response</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for result in results %}
-                        <tr>
-                            <td>{{ loop.index }}</td>
-                            <td>{{ result.text }}</td>
-                            <td>{{ result.sentiment }}</td>
-                            <td>{{ result.tone }}</td>
-                            <td>{{ result.product_name }}</td>
-                            <td>${{ result.best_price }}</td>
-                            <td>{{ result.response }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                {% else %}
-                <p class="text-center">No results yet. Start listening to interact with the assistant.</p>
-                {% endif %}
+            {% if result %}
+            <div class="result-card">
+                <p><strong>Transcription:</strong> {{ result.text }}</p>
+                <p><strong>Sentiment:</strong> {{ result.sentiment }}</p>
+                <p><strong>Tone:</strong> {{ result.tone }}</p>
+                <p><strong>Product:</strong> {{ result.product_name }}</p>
+                <p><strong>Best Price:</strong> ${{ result.best_price }}</p>
+                <p><strong>Seller Guidance:</strong> {{ result.guidance }}</p>
             </div>
+            {% else %}
+            <p class="text-center">No results to display. Start listening to analyze interactions.</p>
+            {% endif %}
         </div>
     </div>
 
