@@ -163,31 +163,71 @@ def generate_llm_response(customer_data, recommendations):
         st.error(f"Error generating AI response: {e}")
         return "Unable to generate a response. Please try again."
 
-# Streamlit App
-st.title("AI Sales Assistant")
-st.sidebar.title("Customer Query")
 
-customer_name = st.text_input("Enter the customer's name:", placeholder="e.g., Jane Smith")
 
-# New Input: Customer Question or Additional Information
-customer_question = st.text_area(
-    "Enter any question, doubt, or additional information from the customer:",
-    placeholder="e.g., Can I get a discount on this car?",
-)
 
-if st.button("Get Recommendations"):
-    if customer_name.strip():
-        with st.spinner("Fetching data and generating recommendations..."):
-            customer_data = fetch_customer_data(customer_name)
-            if customer_data:
-                recommendations = recommend_deals(customer_data)
-                llm_response = generate_llm_response(customer_data, recommendations)
-                st.markdown(f"### Recommendations for {customer_name}:")
-                st.markdown(recommendations)
-                st.markdown(f"### Assistant Response:\n{llm_response}")
-            else:
-                st.warning(f"No data found for customer '{customer_name}'. Please check the name.")
+# Main App
+st.sidebar.title("Navigation")
+page = st.sidebar.selectbox("Select a page", ["Home", "Customer Info"])
+
+if page == "Home":
+    st.title("AI Sales Assistant")
+    st.sidebar.title("Customer Query")
+
+    customer_name = st.text_input("Enter the customer's name:", placeholder="e.g., Jane Smith")
+
+    # New Input: Customer Question or Additional Information
+    customer_question = st.text_area(
+        "Enter any question, doubt, or additional information from the customer:",
+        placeholder="e.g., Can I get a discount on this car?",
+    )
+
+    if st.button("Get Recommendations"):
+        if customer_name.strip():
+            with st.spinner("Fetching data and generating recommendations..."):
+                customer_data = fetch_customer_data(customer_name)
+                if customer_data:
+                    recommendations = recommend_deals(customer_data)
+                    llm_response = generate_llm_response(customer_data, recommendations)
+                    st.markdown(f"### Recommendations for {customer_name}:")
+                    st.markdown(recommendations)
+                    st.markdown(f"### Assistant Response:\n{llm_response}")
+                else:
+                    st.warning(f"No data found for customer '{customer_name}'. Please check the name.")
+        else:
+            st.warning("Please enter a valid customer name.")
+
+# Customer Info Page
+elif page == "Customer Info":
+    st.title("Customer Info")
+    st.sidebar.markdown("# Customer Info")
+
+    def fetch_all_customer_info():
+        """
+        Fetch all customer information from the database.
+        """
+        conn = sqlite3.connect(DB_PATH)
+        query = """
+        SELECT c.CustomerID, c.Name, c.Email, c.Phone, 
+               ih.LastDealStatus, ih.InteractionDate, ih.Notes, 
+               ih.Sentiment, ih.Tone, ih.Intention
+        FROM Customers c
+        LEFT JOIN InteractionHistory ih ON c.CustomerID = ih.CustomerID
+        ORDER BY c.Name
+        """
+        df = pd.read_sql_query(query, conn)
+        conn.close()
+        return df
+
+    # Fetch and display customer data
+    customer_data = fetch_all_customer_info()
+
+    if not customer_data.empty:
+        st.subheader("All Customer Information:")
+        st.dataframe(customer_data, use_container_width=True)  # Display as a scrollable table
     else:
-        st.warning("Please enter a valid customer name.")
+        st.warning("No customer information found in the database.")
+
+
 
 
