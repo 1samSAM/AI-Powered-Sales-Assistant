@@ -5,3 +5,5 @@ alert.json
 env
 
 config.env
+env
+.venv

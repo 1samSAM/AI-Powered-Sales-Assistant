@@ -11,7 +11,6 @@ from langchain.schema import HumanMessage
 from transformers import pipeline
 import speech_recognition as sr
 from google.oauth2.service_account import Credentials
-from googleapiclient.discovery import build
 from utils import analyze_tone, analyze_sentiment
 from dotenv import load_dotenv
 from negotiation import handle_input, negotiation_assistant
@@ -492,6 +491,11 @@ def home_page():
 
         # Display the transcribed text in the text area
         customer_question = st.text_area("Transcribed Query:", value=st.session_state.customer_question)
+
+
+
+
+
 
 
 
