@@ -116,16 +116,7 @@ Commit your changes (git commit -m 'Add your feature')
 Push to the branch (git push origin feature/your-feature)
 ```
 Open a Pull Request
-## 📝 License
-This project is licensed under the MIT License. See the LICENSE file for details.
 
-## 🙌 Acknowledgements
-Special thanks to:
-
-HuggingFace for their powerful pretrained models
-LangChain and RAG for enabling seamless data retrieval
-Groq for providing advanced NLP capabilities
-## Project Structure
 
 Below is the structure of the project and a brief description of each file:
 
@@ -164,8 +155,15 @@ A utility script containing helper functions for sentiment analysis, tone detect
 - **SalesCRM.db**
 The SQLite database file used to store and retrieve data during runtime.
 
-## Acknowledgments
-Hugging Face for their amazing NLP models.
+## 📝 License
+This project is licensed under the MIT License. See the LICENSE file for details.
+
+## 🙌 Acknowledgements
+Special thanks to:
+
+HuggingFace for their powerful pretrained models
+LangChain and RAG for enabling seamless data retrieval
+Groq for providing advanced NLP capabilities 
 Google Cloud for the Sheets API.
 SQLite for lightweight database management.
 Contribution
