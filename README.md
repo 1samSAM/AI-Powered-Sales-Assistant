@@ -154,7 +154,15 @@ Below is the structure of the project and a brief description of each file:
   A list of dependencies required to run the project. Use the following command to install them:
   ```bash
   pip install -r requirements.txt
+- **state.py88
+Manages session states, tracking the progress of negotiations, customer interactions, and application state throughout execution.
 
+- **utils.py**
+A utility script containing helper functions for sentiment analysis, tone detection, and general-purpose tasks used across the project.
+
+### Database File
+- **SalesCRM.db**
+The SQLite database file used to store and retrieve data during runtime.
 
 ## Acknowledgments
 Hugging Face for their amazing NLP models.
