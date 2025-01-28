@@ -116,44 +116,21 @@ Commit your changes (git commit -m 'Add your feature')
 Push to the branch (git push origin feature/your-feature)
 ```
 Open a Pull Request
+## Project Structure
 
-
-Below is the structure of the project and a brief description of each file:
-
-### **Database**
-- **`SalesCRM.db`**  
-  The main database that stores customer details, product information, negotiation history, and other key data required for CRM operations.
-
-- **`crm_database_create.py`**  
-  Script for creating and initializing the `SalesCRM.db` database, including tables for customers, products, and negotiation logs.
-
-### **Core Scripts**
-- **`indexing.py`**  
-  Handles vector creation and indexing using embeddings for product details. This is crucial for similarity search and retrieval in the RAG (Retrieval-Augmented Generation) framework.
-
-- **`main.py`**  
-  The main entry point for the application. Integrates all modules and orchestrates the overall workflow, including user interface and backend functionalities.
-
-- **`negotiation.py`**  
-  Contains logic for the AI-powered negotiation assistant, which uses sentiment, tone, and real-time customer input to drive intelligent deal recommendations.
-
-### **Utilities**
-- **`product_details.xlsx`**  
-  A dataset containing 200 car details such as model names, features, and prices. This file is used for recommendation and negotiation.
-
-- **`requirements.txt`**  
-  A list of dependencies required to run the project. Use the following command to install them:
-  ```bash
-  pip install -r requirements.txt
-- **state.py**
-Manages session states, tracking the progress of negotiations, customer interactions, and application state throughout execution.
-
-- **utils.py**
-A utility script containing helper functions for sentiment analysis, tone detection, and general-purpose tasks used across the project.
-
-### Database File
-- **SalesCRM.db**
-The SQLite database file used to store and retrieve data during runtime.
+```bash
+.
+├── SalesCRM.db             # SQLite database for CRM data
+├── crm_database_create.py  # Script for creating the CRM database
+├── indexing.py             # Script for vector creation using the RAG framework
+├── main.py                 # Main application file for running the tool
+├── negotiation.py          # Module handling negotiation processes
+├── product_details.xlsx    # Excel file containing car details
+├── requirements.txt        # List of dependencies for the project
+├── state.py                # State management logic
+├── utils.py                # Utility functions used across the project
+└── README.md               # Project documentation
+```
 
 ## 📝 License
 This project is licensed under the MIT License. See the LICENSE file for details.
