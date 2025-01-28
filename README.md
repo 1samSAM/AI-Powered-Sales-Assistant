@@ -1,4 +1,4 @@
-# Real-Time AI-Powered Sales Intelligence Tool
+# Real-Time AI Sales Intelligence and Sentiment-Driven Deal Negotiation Assistant 
 
 Enhancing sales performance through AI-driven insights, real-time analytics, and personalized deal recommendations.
 
