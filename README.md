@@ -126,7 +126,6 @@ HuggingFace for their powerful pretrained models
 LangChain and RAG for enabling seamless data retrieval
 Groq for providing advanced NLP capabilities
 ## Project Structure
-## Project Structure
 
 Below is the structure of the project and a brief description of each file:
 
