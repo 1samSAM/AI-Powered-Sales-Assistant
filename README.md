@@ -154,7 +154,7 @@ Below is the structure of the project and a brief description of each file:
   A list of dependencies required to run the project. Use the following command to install them:
   ```bash
   pip install -r requirements.txt
-- **state.py88
+- **state.py**
 Manages session states, tracking the progress of negotiations, customer interactions, and application state throughout execution.
 
 - **utils.py**
