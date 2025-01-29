@@ -40,7 +40,13 @@ def update_performance_metrics(sheet_id, customer_name, sales_rep, negotiation_r
     except Exception as e:
         st.error(f"Error updating Google Sheets: {e}")
 
-
+def update_negotiation_result(customer_query):
+    if "ready" in customer_query.lower() or "buy" in customer_query.lower():
+        return "Close Deal"
+    elif "more information" in customer_query.lower() or "questions" in customer_query.lower():
+        return "Continue Negotiation"
+    else:
+        return "End Negotiation"
 
 
 def negotiation_assistant(
@@ -50,13 +56,16 @@ def negotiation_assistant(
     AI generates concise negotiation tips with relevant car details, pricing, and negotiation logic.
     The LLM calculates discounts and provides seller-focused suggestions to close the deal.
     """
+    # Update negotiation result based on customer query
+    negotiation_result = update_negotiation_result(customer_query1)
+
     prompt = f"""
         INSTRUCTIONS:
         -- You are an AI assistant representing the seller in a car negotiation.
         -- The customer '{customer_name}' has shown interest in the following recommendations:
         {recommendation}
         -- Your goal is to dynamically retrieve details like price, features, and calculate appropriate discounts while ensuring continuity with previous discussions.
-        -- the {negotiation_result} contain the current negotiation result, the respones should be consider the "Continue Negotiation", "Close Deal", "End Negotiation"
+        -- The {negotiation_result} contains the current negotiation result; the responses should consider "Continue Negotiation", "Close Deal", or "End Negotiation".
 
         OBJECTIVES:
         1. Retrieve key details for each recommended car (name, price, features).
@@ -82,10 +91,19 @@ def negotiation_assistant(
     try:
         # Invoke LLM to handle negotiation logic
         response = llm.invoke([HumanMessage(content=prompt)])
-        return response.content.strip()
+        response_content = response.content.strip()
+
+        # Check if the customer is satisfied and ready to close the deal
+        if negotiation_result == "Close Deal":
+            response_content += "\n\nCongratulations! It seems you're ready to proceed. Let's finalize the paperwork and get you on the road with your new car!"
+
+        return response_content
     except Exception as e:
         st.error(f"Error generating negotiation tips: {e}")
         return "Unable to generate tips. Please try again."
+    
+
+
 
 
 def generate_sales(last_message):

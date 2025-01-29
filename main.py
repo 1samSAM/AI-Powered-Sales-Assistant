@@ -11,38 +11,33 @@ from langchain.schema import HumanMessage
 from transformers import pipeline
 import speech_recognition as sr
 from google.oauth2.service_account import Credentials
+from audio_recorder_streamlit import audio_recorder
 from utils import analyze_tone, analyze_sentiment
 from dotenv import load_dotenv
 from negotiation import handle_input, negotiation_assistant
 from functools import partial  # Import partial to pass arguments
 from state import Sinteraction_history
 
-# Initialize recognizer
-recognizer = sr.Recognizer()
-# Global variable to control the listening state
+# Initialize session state for customer_question
+if "customer_question" not in st.session_state:
+    st.session_state.customer_question = ""
 if "is_listening" not in st.session_state:
     st.session_state.is_listening = False
+
 # Function to transcribe audio
-def transcribe_audio():
-    while st.session_state.is_listening:
-        with sr.Microphone() as source:
-            st.write("Listening...")
-            try:
-                # Adjust for ambient noise and listen to the microphone
-                recognizer.adjust_for_ambient_noise(source)
-                audio_data = recognizer.listen(source, timeout=5)
-                st.write("Recognizing...")
-                
-                # Transcribe the audio to text
-                text = recognizer.recognize_google(audio_data, language="en-US")
-                st.session_state.customer_question = text  # Update session state with transcribed text
-                st.write(f"Transcribed Text: {text}")
-            except sr.WaitTimeoutError:
-                st.warning("Listening timed out. Please speak again.")
-            except sr.UnknownValueError:
-                st.error("Sorry, I could not understand the audio.")
-            except sr.RequestError:
-                st.error("Sorry, there was an issue with the speech recognition service.")
+
+def transcribe_audio(audio_file):
+    """Transcribe audio file to text using SpeechRecognition."""
+    recognizer = sr.Recognizer()
+    try:
+        with sr.AudioFile(audio_file) as source:
+            audio = recognizer.record(source)
+            text = recognizer.recognize_google(audio)
+            st.session_state.customer_question = text
+    except sr.UnknownValueError:
+        st.error("Google Speech Recognition could not understand the audio.")
+    except sr.RequestError as e:
+        st.error(f"Could not request results from Google Speech Recognition service; {e}")
 
 
 
@@ -320,34 +315,43 @@ def generate_llm_response(customer_data, recommendations, customer_question):
     """Generate AI response for the sales assistant."""
     prompt = f"""
     You are a professional sales assistant. Based on the customer profile and recommendations, 
-    generate a point-by-point summarize shorty of the last interaction and personal emotion(sentiment and tone) in a professional tone. 
-    The summary should be concise yet detailed, focusing on key points relevant to the customer's needs and concerns. 
+    generate a concise, point-by-point summary for the salesperson. The response should be easy to read and actionable, 
+    focusing on key points relevant to the customer's needs and concerns. The  shorty summary should be concise yet detailed, focusing on key points relevant to the customer's needs and concerns
 
-    Additionally, craft a set of clear, engaging, and concise instructions that the salesperson can use 
-    to communicate the recommendations effectively to the customer. 
-    These instructions should:
-    - Highlight the customer's preferences.
-    - Address their concerns.
-    - Encourage further action.
-    - Be phrased in a friendly and approachable manner.
-    - Remain short and to the point.
-    -explaining shorty why each option is suitable based on the customer's profile and query.
+    Structure the response as follows:
 
-    Customer Profile:
+    1. **Recommendations (Point-by-Point)**:
+       - List each recommendation in bullet points.
+       - For each recommendation, provide:
+         - **Full Car Details**: Include the car's name, price, key features, and benefits.
+         - A 2-sentence explanation of why this deal is suitable for the customer.
+         - A 2-sentence tip for the salesperson on what to emphasize during the sales call.
+
+    2. **Customer Context**:
+       - Briefly summarize the customer's profile, sentiment, tone, and intention in 2-3 sentences.
+
+    3. **Salesperson Tips**:
+       - Provide 2-3 actionable tips for the salesperson to address the customer's question or concerns during the call.
+
+    ---
+
+    **Customer Profile**:
     - Name: {customer_data.get('Name', 'Unknown')}
     - Last Deal Status: {customer_data.get('LastDealStatus', 'Unknown')}
     - Notes: {customer_data.get('Notes', 'No notes available')}
     - Sentiment: {customer_data.get('Sentiment', 'Neutral')}
     - Tone: {customer_data.get('Tone', 'Neutral')}
     - Intention: {customer_data.get('Intention', 'Inquiry')}
-    
-    Recommendations:
+
+    **Recommendations**:
     {recommendations}
-    
-    Customer Question or Additional Information:
+
+    **Customer Question or Additional Information**:
     {customer_question}
-    
-    Provide a clear, concise,summarize shortiy and actionable response for the salesperson.
+
+    ---
+
+    Provide a clear, concise, and actionable response for the salesperson.
     """
     try:
         response = llm.invoke(prompt)
@@ -355,7 +359,6 @@ def generate_llm_response(customer_data, recommendations, customer_question):
     except Exception as e:
         st.error(f"Error generating AI response: {e}")
         return "Unable to generate a response. Please try again."
-
 
 # Function to update customer interaction in the database
 def update_customer_interaction(customer_id, last_deal_status, notes, recommendations, sentiment, tone, intention):
@@ -467,9 +470,6 @@ def home_page():
     # Input for customer query (text or audio)
     st.write("Enter Customer Query or Additional Information:")
 
-    # Initialize session state for customer_question
-    if "customer_question" not in st.session_state:
-        st.session_state.customer_question = ""
 
     # Option to choose between text or audio input
     input_method = st.radio("Select Input Method:", ("Text", "Audio"))
@@ -479,15 +479,19 @@ def home_page():
         customer_question = st.text_area("Type your query here:", value=st.session_state.customer_question)
         st.session_state.customer_question = customer_question
     else:
-        # Audio input
-        if st.button("Start Listening" if not st.session_state.is_listening else "Stop Listening"):
-            st.session_state.is_listening = not st.session_state.is_listening
+        # Audio input using streamlit-audio-recorder
+        st.write("Click the microphone to start recording:")
+        audio_bytes = audio_recorder()
 
-            # Start/stop the transcription thread
-            if st.session_state.is_listening:
-                threading.Thread(target=transcribe_audio, daemon=True).start()
-            else:
-                st.write("Listening stopped.")
+        if audio_bytes:
+            # Save the recorded audio to a temporary file
+            with open("temp_audio.wav", "wb") as f:
+                f.write(audio_bytes)
+
+            # Transcribe the audio with a spinner
+            st.write("Transcribing audio...")
+            with st.spinner("Transcribing..."):
+                transcribe_audio("temp_audio.wav")
 
         # Display the transcribed text in the text area
         customer_question = st.text_area("Transcribed Query:", value=st.session_state.customer_question)
@@ -624,7 +628,10 @@ def home_page():
                     )
                     st.session_state[f'negotiation_history_{customer_id}'].append(initial_tips)
                     st.write(initial_tips)
-                # Ask for customer input after generating initial tips
+
+                
+                
+
                 user_input = st.text_input(
                     "Enter customer's query or response:",
                     key=f"user_input_{customer_id}",
@@ -633,6 +640,8 @@ def home_page():
                 # Process user input if provided
                 if user_input:
                     handle_input(customer_data)
+                
+                
 
                 if st.session_state[f'conversation_{customer_id}']:
                     st.write("### Conversation History")
