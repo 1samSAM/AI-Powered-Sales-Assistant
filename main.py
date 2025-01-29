@@ -315,34 +315,43 @@ def generate_llm_response(customer_data, recommendations, customer_question):
     """Generate AI response for the sales assistant."""
     prompt = f"""
     You are a professional sales assistant. Based on the customer profile and recommendations, 
-    generate a point-by-point summarize shorty of the last interaction and personal emotion(sentiment and tone) in a professional tone. 
-    The summary should be concise yet detailed, focusing on key points relevant to the customer's needs and concerns. 
+    generate a concise, point-by-point summary for the salesperson. The response should be easy to read and actionable, 
+    focusing on key points relevant to the customer's needs and concerns. The  shorty summary should be concise yet detailed, focusing on key points relevant to the customer's needs and concerns
 
-    Additionally, craft a set of clear, engaging, and concise instructions that the salesperson can use 
-    to communicate the recommendations effectively to the customer. 
-    These instructions should:
-    - Highlight the customer's preferences.
-    - Address their concerns.
-    - Encourage further action.
-    - Be phrased in a friendly and approachable manner.
-    - Remain short and to the point.
-    -explaining shorty why each option is suitable based on the customer's profile and query.
+    Structure the response as follows:
 
-    Customer Profile:
+    1. **Recommendations (Point-by-Point)**:
+       - List each recommendation in bullet points.
+       - For each recommendation, provide:
+         - **Full Car Details**: Include the car's name, price, key features, and benefits.
+         - A 2-sentence explanation of why this deal is suitable for the customer.
+         - A 2-sentence tip for the salesperson on what to emphasize during the sales call.
+
+    2. **Customer Context**:
+       - Briefly summarize the customer's profile, sentiment, tone, and intention in 2-3 sentences.
+
+    3. **Salesperson Tips**:
+       - Provide 2-3 actionable tips for the salesperson to address the customer's question or concerns during the call.
+
+    ---
+
+    **Customer Profile**:
     - Name: {customer_data.get('Name', 'Unknown')}
     - Last Deal Status: {customer_data.get('LastDealStatus', 'Unknown')}
     - Notes: {customer_data.get('Notes', 'No notes available')}
     - Sentiment: {customer_data.get('Sentiment', 'Neutral')}
     - Tone: {customer_data.get('Tone', 'Neutral')}
     - Intention: {customer_data.get('Intention', 'Inquiry')}
-    
-    Recommendations:
+
+    **Recommendations**:
     {recommendations}
-    
-    Customer Question or Additional Information:
+
+    **Customer Question or Additional Information**:
     {customer_question}
-    
-    Provide a clear, concise,summarize shortiy and actionable response for the salesperson.
+
+    ---
+
+    Provide a clear, concise, and actionable response for the salesperson.
     """
     try:
         response = llm.invoke(prompt)
@@ -350,7 +359,6 @@ def generate_llm_response(customer_data, recommendations, customer_question):
     except Exception as e:
         st.error(f"Error generating AI response: {e}")
         return "Unable to generate a response. Please try again."
-
 
 # Function to update customer interaction in the database
 def update_customer_interaction(customer_id, last_deal_status, notes, recommendations, sentiment, tone, intention):
@@ -623,34 +631,7 @@ def home_page():
 
                 
                 
-                #input_method = st.radio("Select Input Method:", ("Text", "Audio"), key=f"input_method_{customer_id}")
-                
-                #if input_method == "Text":
-                #    user_input = st.text_input(
-                #        "Enter customer's query or response:",
-                #        key=f"user_input_{customer_id}",
-                #        on_change=partial(handle_input, customer_data)
-                #        )
-                #    if user_input:
-                #        handle_input(user_input)
-                
-                #else:
-                #    st.write("Click the microphone to start recording:")
-                #    audio_bytes = audio_recorder()
-                
-                #    if audio_bytes:
-                #        with open("temp_audio.wav", "wb") as f:
-                #                f.write(audio_bytes)
-                #                st.write("Transcribing audio...")
-                #        with st.spinner("Transcribing..."):
-                #            transcribe_audio("temp_audio.wav")
-                    
-                #    st.text_area("Transcribed Query:", value=st.session_state.customer_question)    
 
-
-
-                
-                
                 user_input = st.text_input(
                     "Enter customer's query or response:",
                     key=f"user_input_{customer_id}",
