@@ -65,7 +65,7 @@ Inputs → AI Processing → Outputs (Insights, Recommendations, Feedback)
 
 1. **Clone the Repository**  
    ```bash
-   git clone https://github.com/your-username/real-time-sales-intelligence.git
+   git clone https://github.com/1samSAM/Real-time-Ai-sales-intelligence.git
    cd real-time-sales-intelligence
 
 2. **Install Dependencies**
