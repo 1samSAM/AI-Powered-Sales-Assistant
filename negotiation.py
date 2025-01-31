@@ -3,6 +3,9 @@ import streamlit as st
 import time
 import pandas as pd
 import uuid
+import base64
+import json
+import os
 from utils import analyze_tone, analyze_sentiment, llm
 from googleapiclient.discovery import build
 from langchain.schema import HumanMessage
@@ -15,12 +18,11 @@ SCOPES = [
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/drive",
 ]
-SERVICE_ACCOUNT_FILE = "alert.json"
+service_account_base64 = os.getenv("GOOGLE_SERVICE_ACCOUNT_BASE64")
+service_account_info = json.loads(base64.b64decode(service_account_base64).decode("utf-8"))
 
 # Google Sheets Authentication
-credentials = Credentials.from_service_account_file(
-    SERVICE_ACCOUNT_FILE, scopes=SCOPES
-)
+credentials = Credentials.from_service_account_info(service_account_info, scopes=SCOPES)
 client = gspread.authorize(credentials)
 sheet = client.open("my project").sheet1
 
