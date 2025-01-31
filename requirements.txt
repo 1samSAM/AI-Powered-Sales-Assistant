@@ -13,3 +13,4 @@ faiss-cpu
 speechrecognition
 torch
 audio-recorder-streamlit
+sentence-transformers
