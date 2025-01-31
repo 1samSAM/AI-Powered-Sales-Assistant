@@ -12,3 +12,4 @@ google-auth-httplib2
 faiss-cpu
 speechrecognition
 torch
+audio-recorder-streamlit
