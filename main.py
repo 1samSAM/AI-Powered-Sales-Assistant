@@ -65,16 +65,6 @@ llm = initialize_groq_model(api_key=os.environ["GROQ_API_KEY"])
 DB_PATH = "SalesCRM.db"
 VECTOR_STORE_PATH = "vector_store_index"
 
-SCOPES = [
-    "https://www.googleapis.com/auth/spreadsheets",
-    "https://www.googleapis.com/auth/drive",
-]
-SERVICE_ACCOUNT_FILE = "alert.json"
-
-# Google Sheets Authentication
-credentials = Credentials.from_service_account_file(
-    SERVICE_ACCOUNT_FILE, scopes=SCOPES
-)
 
 # Load vector store
 embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
