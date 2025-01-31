@@ -39,6 +39,16 @@ The **Real-Time AI-Powered Sales Intelligence Tool** is designed to revolutioniz
 
 ---
 
+## Deployment & Access
+
+The AI-Powered Sales Intelligence tool has been successfully deployed and is now available for testing. You can try the live application at:
+
+🔗 [[Your Streamlit App URL](https://real-time-ai-sales-intelligence.streamlit.app/)]
+
+This application provides dynamic deal recommendations and post-call insights based on real-time buyer signals. It utilizes NLP, sentiment analysis, and CRM data to assist sales teams in optimizing customer interactions.
+
+Feel free to explore the features and provide feedback! 🚀
+
 ## 🔧 System Architecture
 
 **Components**:  
@@ -133,15 +143,7 @@ Open a Pull Request
 ```
 
 
-## Deployment & Access
 
-The AI-Powered Sales Intelligence tool has been successfully deployed and is now available for testing. You can try the live application at:
-
-🔗 [[Your Streamlit App URL](https://real-time-ai-sales-intelligence.streamlit.app/)]
-
-This application provides dynamic deal recommendations and post-call insights based on real-time buyer signals. It utilizes NLP, sentiment analysis, and CRM data to assist sales teams in optimizing customer interactions.
-
-Feel free to explore the features and provide feedback! 🚀
 
 ## 📝 License
 This project is licensed under the MIT License. See the LICENSE file for details.
